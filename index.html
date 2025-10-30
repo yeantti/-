@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌿 상태와 환경 퀴즈</title>
+  <style>
+    body {
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      background: linear-gradient(135deg, #e8fff7, #fff9f9);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #2b7a78;
+      margin-top: 40px;
+      font-size: 2.4em;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .quiz-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      margin: 30px auto;
+      transition: 0.3s ease;
+    }
+
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .answers button {
+      display: block;
+      width: 100%;
+      background: #defcf9;
+      border: 2px solid #2b7a78;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 8px 0;
+      cursor: pointer;
+      font-size: 1em;
+      transition: 0.2s ease;
+    }
+
+    .answers button:hover {
+      background: #aef1e1;
+      transform: scale(1.03);
+    }
+
+    .answers button.correct {
+      background: #bdfcc9;
+      border-color: #4caf50;
+    }
+
+    .answers button.wrong {
+      background: #ffcdd2;
+      border-color: #e57373;
+    }
+
+    #next-btn {
+      margin-top: 20px;
+      background: #ffb6b9;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #next-btn:hover {
+      background: #ff9296;
+    }
+
+    #score-container {
+      text-align: center;
+    }
+
+    #score {
+      font-size: 1.4em;
+      margin-top: 20px;
+      color: #2b7a78;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌿 상태와 환경 퀴즈</h1>
+  <div class="quiz-container">
+    <div id="question-container">
+      <div class="question" id="question">질문이 여기에 표시됩니다</div>
+      <div class="answers" id="answer-buttons"></div>
+    </div>
+    <button id="next-btn">다음 문제 ▶</button>
+  </div>
+  <div id="score-container" style="display:none;">
+    <h2>🎉 퀴즈 완료!</h2>
+    <p id="score"></p>
+    <button onclick="restartQuiz()">다시 풀기 🔁</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "지구의 평균 온도가 점점 올라가는 현상을 무엇이라고 할까?",
+        answers: [
+          { text: "지구온난화", correct: true },
+          { text: "빙하기", correct: false },
+          { text: "오존층 형성", correct: false },
+          { text: "대기 순환", correct: false }
+        ]
+      },
+      {
+        question: "대기 중 온실가스가 많아지면 생기는 문제는?",
+        answers: [
+          { text: "기온이 높아짐", correct: true },
+          { text: "기온이 낮아짐", correct: false },
+          { text: "계절이 사라짐", correct: false },
+          { text: "자외선이 줄어듦", correct: false }
+        ]
+      },
+      {
+        question: "다음 중 재생에너지가 아닌 것은?",
+        answers: [
+          { text: "태양에너지", correct: false },
+          { text: "풍력에너지", correct: false },
+          { text: "석탄에너지", correct: true },
+          { text: "수력에너지", correct: false }
+        ]
+      },
+      {
+        question: "플라스틱 쓰레기가 바다에 들어가면 가장 큰 피해를 입는 생물은?",
+        answers: [
+          { text: "해양 생물", correct: true },
+          { text: "육상 동물", correct: false },
+          { text: "식물", correct: false },
+          { text: "조류", correct: false }
+        ]
+      },
+      {
+        question: "다음 중 온실가스에 해당하지 않는 것은?",
+        answers: [
+          { text: "이산화탄소", correct: false },
+          { text: "메탄", correct: false },
+          { text: "산소", correct: true },
+          { text: "아산화질소", correct: false }
+        ]
+      },
+      {
+        question: "에너지 절약 방법으로 옳은 것은?",
+        answers: [
+          { text: "불필요한 전기 끄기", correct: true },
+          { text: "냉장고 문 자주 열기", correct: false },
+          { text: "물 틀어놓고 양치하기", correct: false },
+          { text: "자동차 혼자 타기", correct: false }
+        ]
+      },
+      {
+        question: "대기 오염의 주된 원인이 아닌 것은?",
+        answers: [
+          { text: "자동차 배기가스", correct: false },
+          { text: "공장 매연", correct: false },
+          { text: "나무 심기", correct: true },
+          { text: "쓰레기 소각", correct: false }
+        ]
+      },
+      {
+        question: "기후 변화로 인해 일어날 수 있는 현상은?",
+        answers: [
+          { text: "해수면 상승", correct: true },
+          { text: "산소 농도 증가", correct: false },
+          { text: "빙하 확대", correct: false },
+          { text: "지진 증가", correct: false }
+        ]
+      },
+      {
+        question: "일상에서 환경 보호를 실천할 수 있는 행동은?",
+        answers: [
+          { text: "분리수거 하기", correct: true },
+          { text: "일회용품 많이 쓰기", correct: false },
+          { text: "차로 가까운 거리 이동", correct: false },
+          { text: "물 낭비하기", correct: false }
+        ]
+      },
+      {
+        question: "지속 가능한 발전이란 무엇일까?",
+        answers: [
+          { text: "현재와 미래 세대가 모두 잘 살 수 있도록 발전하는 것", correct: true },
+          { text: "경제만 빠르게 성장하는 것", correct: false },
+          { text: "자원을 모두 사용하는 것", correct: false },
+          { text: "환경을 무시한 개발", correct: false }
+        ]
+      }
+    ];
+
+    const questionElement = document.getElementById("question");
+    const answerButtons = document.getElementById("answer-buttons");
+    const nextButton = document.getElementById("next-btn");
+    const scoreContainer = document.getElementById("score-container");
+    const scoreText = document.getElementById("score");
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      nextButton.innerText = "다음 문제 ▶";
+      scoreContainer.style.display = "none";
+      document.querySelector(".quiz-container").style.display = "block";
+      showQuestion();
+    }
+
+    function showQuestion() {
+      resetState();
+      let currentQuestion = questions[currentQuestionIndex];
+      questionElement.innerText = currentQuestion.question;
+
+      currentQuestion.answers.forEach(answer => {
+        const button = document.createElement("button");
+        button.innerText = answer.text;
+        button.classList.add("btn");
+        button.addEventListener("click", () => selectAnswer(button, answer.correct));
+        answerButtons.appendChild(button);
+      });
+    }
+
+    function resetState() {
+      nextButton.style.display = "none";
+      while (answerButtons.firstChild) {
+        answerButtons.removeChild(answerButtons.firstChild);
+      }
+    }
+
+    function selectAnswer(button, correct) {
+      const buttons = answerButtons.querySelectorAll("button");
+      buttons.forEach(btn => btn.disabled = true);
+      if (correct) {
+        button.classList.add("correct");
+        score++;
+      } else {
+        button.classList.add("wrong");
+      }
+      nextButton.style.display = "block";
+    }
+
+    nextButton.addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        showScore();
+      }
+    });
+
+    function showScore() {
+      document.querySelector(".quiz-container").style.display = "none";
+      scoreContainer.style.display = "block";
+      scoreText.innerText = `맞힌 문제: ${score} / ${questions.length}`;
+    }
+
+    function restartQuiz() {
+      startQuiz();
+    }
+
+    startQuiz();
+  </script>
+</body>
+</html>
